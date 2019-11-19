@@ -7,12 +7,10 @@ import (
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
-// "gopkg.in/gographics/imagick.v2/imagick"
-
 func main() {
 
 	input := "./test_file/gauis.png"
-	// output := "./output/%d.png"
+	output := "./output/%d.png"
 
 	log.Println("Start image processing")
 	imagick.Initialize()
@@ -28,27 +26,25 @@ func main() {
 	// 	output = os.Args[2]
 	// }
 
+	// Make a mw for the original
 	mw := imagick.NewMagickWand()
-	// err = mw.ReadImage(input)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// pw := imagick.NewPixelWand()
-	// pw.SetColor("white")
-	// mw.CropImage(32, 32, 0, 0)
+	err := mw.ReadImage(input)
+	if err != nil {
+		panic(err)
+	}
 
-	// Create a 100x100 image with a default of white
-	mw.ReadImage(input)
+	// Create a second mw to write the images
 	mw_output := imagick.NewMagickWand()
 
-	// Get a new pixel iterator
-	// iterator := mw.NewPixelRegionIterator(32, 32, 0, 0)
-
+	// Get the max number of tiles
+	// TODO::validate tiles size as divisble by 16 or 32
 	tilesW := int(mw.GetImageWidth()) / 32
 	tilesH := int(mw.GetImageHeight()) / 32
 	log.Printf("Image is %d wide and %d tall", tilesW, tilesH)
-	for h := 0; h < tilesH && h < 12; h++ {
-		for w := 0; w < tilesW && w < 12; w++ {
+
+	// Proces spritesheet
+	for h := 0; h < tilesH; h++ {
+		for w := 0; w < tilesW; w++ {
 
 			// Cut out a tile
 			temp := mw.Clone()
@@ -62,16 +58,9 @@ func main() {
 				continue
 			}
 
-			// log.Printf("Adding frame %d: %d", h, w)
 			mw_output.AddImage(temp)
 		}
 
 	}
-	mw_output.WriteImages("./output/%03d.png", true)
-
-	// if err = mw.WriteImages(output, false); err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Printf("Wrote: %s\n", output)
+	mw_output.WriteImages(output, true)
 }
