@@ -44,11 +44,25 @@ func main() {
 	// Get a new pixel iterator
 	// iterator := mw.NewPixelRegionIterator(32, 32, 0, 0)
 
-	for y := 0; y < int(mw.GetImageHeight()) && y < 10; y++ {
-		for x := 0; x < int(mw.GetImageWidth()) && x < 10; x++ {
-			log.Printf("%d: %d", x, y)
+	tilesW := int(mw.GetImageWidth()) / 32
+	tilesH := int(mw.GetImageHeight()) / 32
+	log.Printf("Image is %d wide and %d tall", tilesW, tilesH)
+	for h := 0; h < tilesH && h < 12; h++ {
+		for w := 0; w < tilesW && w < 12; w++ {
+
+			// Cut out a tile
 			temp := mw.Clone()
-			temp.CropImage(32, 32, 0, 0)
+			temp.CropImage(32, 32, w*32, h*32)
+
+			uc := temp.GetImageColors()
+			log.Printf("%d", uc)
+
+			if uc == 1 {
+				log.Printf("Frame with only one color at %d: %d", h, w)
+				continue
+			}
+
+			// log.Printf("Adding frame %d: %d", h, w)
 			mw_output.AddImage(temp)
 		}
 
