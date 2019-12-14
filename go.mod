@@ -9,4 +9,5 @@ require (
 	github.com/quirkey/magick v0.0.0-20140324185457-b37664054620
 	gopkg.in/gographics/imagick.v2 v2.5.0
 	gopkg.in/gographics/imagick.v3 v3.2.0
+	gopkg.in/yaml.v2 v2.2.7
 )
