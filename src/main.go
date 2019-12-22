@@ -32,7 +32,6 @@ func main() {
 	}
 
 	// Create a second mw to write the images
-	// printers := imagick.NewMagickWand()
 
 	// Get the max number of tiles
 	// TODO::validate tiles size as divisble by 16 or 32
@@ -44,20 +43,32 @@ func main() {
 	for i := 0; i < tilesH; i++ {
 		tiles[i] = make([]*tile.Tile, tilesW)
 	}
+	for h := 0; h < tilesH; h++ {
+		for w := 0; w < tilesW; w++ {
+			tiles[h][w] = tile.New(mw.Clone(), w, h, 32)
+		}
+	}
+
+	uniqueSets := 0
+	printers := make([]*imagick.MagickWand, 0)
+	//
+	var lastTile *tile.Tile
+	for h := 0; h < tilesH; h++ {
+		for w := 0; w < tilesW; w++ {
+			if lastTile == nil && !tiles[h][w].HasOneColor() {
+				printers = append(printers, imagick.NewMagickWand())
+
+				uniqueSets++
+			}
+
+			printers[uniqueSets-1].AddImage(tiles[h][w].GetFinalImage())
+			lastTile = tiles[h][w]
+		}
+	}
+
 	// empty := false
 	// TODO::each color for sprite 4 col
 	// TODO::each class has single color tiles in between
-	for h := 0; h < tilesH; h++ {
-		for w := 0; w < COLOR_COL; w++ {
-
-			tiles[h][w] = tile.New(mw.Clone(), w, h, 32)
-			// if temp.HasOneColor() {
-			// 	continue
-			// }
-
-			// printers.AddImage(temp.GetFinalImage())
-		}
-	}
-	log.Printf("%#v", tiles)
-	// printers.WriteImages(config.GetOutputFolder(), true)
+	// log.Print(tiles)
+	printers[0].WriteImages(config.GetOutputFolder(), true)
 }
