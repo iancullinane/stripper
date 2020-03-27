@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"path"
+	"path/filepath"
 
 	"github.com/iancullinane/stripper/src/config"
 	"github.com/iancullinane/stripper/src/tile"
@@ -16,6 +19,13 @@ func main() {
 	config := config.New()
 
 	log.Println("Start image processing")
+	od := config.GetOutputFolder()
+
+	err := ClearDir(od)
+	if err != nil {
+		panic(err)
+	}
+
 	imagick.Initialize()
 
 	// Orignical IM I used for first spriresheet
@@ -25,8 +35,8 @@ func main() {
 	defer imagick.Terminate()
 
 	// Make a mw for the original
-	mw := imagick.NewMagickWand()
-	err := mw.ReadImage(config.GetInputFolder())
+	og := imagick.NewMagickWand()
+	err = og.ReadImage(config.GetInputFolder())
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +45,7 @@ func main() {
 
 	// Get the max number of tiles
 	// TODO::validate tiles size as divisble by 16 or 32
-	tilesW, tilesH := utils.GetTilesHandW(32, mw)
+	tilesW, tilesH := utils.GetTilesHandW(32, og)
 	log.Printf("Image is %d wide and %d tall", tilesW, tilesH)
 
 	// Initialize a ten length slice of empty slices
@@ -45,30 +55,62 @@ func main() {
 	}
 	for h := 0; h < tilesH; h++ {
 		for w := 0; w < tilesW; w++ {
-			tiles[h][w] = tile.New(mw.Clone(), w, h, 32)
+			tiles[h][w] = tile.New(og.Clone(), w, h, 32)
 		}
 	}
 
 	uniqueSets := 0
 	printers := make([]*imagick.MagickWand, 0)
-	//
-	var lastTile *tile.Tile
+
+	// var lastTile *tile.Tile
 	for h := 0; h < tilesH; h++ {
 		for w := 0; w < tilesW; w++ {
-			if lastTile == nil && !tiles[h][w].HasOneColor() {
-				printers = append(printers, imagick.NewMagickWand())
 
-				uniqueSets++
+			if !tiles[h][w].HasOneColor() {
+				// printers = append(printers, imagick.NewMagickWand())
+				// uniqueSets++
+				log.Println("whtfadn")
+				continue
 			}
+			log.Println("bluuhndksjabnkd")
 
+			printers = append(printers, imagick.NewMagickWand())
 			printers[uniqueSets-1].AddImage(tiles[h][w].GetFinalImage())
-			lastTile = tiles[h][w]
+			// lastTile = tiles[h][w]
 		}
 	}
 
+	log.Println(config.GetOutputFolder())
+	log.Println(len(printers))
 	// empty := false
 	// TODO::each color for sprite 4 col
 	// TODO::each class has single color tiles in between
 	// log.Print(tiles)
-	printers[0].WriteImages(config.GetOutputFolder(), true)
+	for _, printer := range printers {
+		printer.WriteImages(config.GetOutputFolder(), true)
+	}
+
+}
+
+func ClearDir(dir string) error {
+
+	cleanPath := path.Dir(dir)
+	log.Printf("Remove %s", cleanPath)
+	d, err := os.Open(cleanPath)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		log.Printf("rm %s/%s", cleanPath, name)
+		err = os.RemoveAll(filepath.Join(cleanPath, name))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
