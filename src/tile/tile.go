@@ -46,22 +46,3 @@ func (t Tile) GetFinalImage() *imagick.MagickWand {
 // 		next *imagick.MagickWand
 // 	}
 // }
-
-// type slackClient struct {
-// 	bots          map[string]*bot.Bot
-// 	userStorage   UserStorage
-// 	githubClient  GithubClient
-// 	validChannels []string
-// 	logger        Logger
-// }
-
-// func New(userStorage UserStorage, bots map[string]*bot.Bot, githubClient GithubClient, validChannels []string, logger Logger) *slackClient {
-
-// 	return &slackClient{
-// 		userStorage:   userStorage,
-// 		bots:          bots,
-// 		githubClient:  githubClient,
-// 		validChannels: validChannels,
-// 		logger:        logger,
-// 	}
-// }

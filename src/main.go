@@ -67,12 +67,10 @@ func main() {
 		for w := 0; w < tilesW; w++ {
 
 			if !tiles[h][w].HasOneColor() {
-				// printers = append(printers, imagick.NewMagickWand())
-				// uniqueSets++
-				log.Println("whtfadn")
+				printers = append(printers, imagick.NewMagickWand())
+				uniqueSets++
 				continue
 			}
-			log.Println("bluuhndksjabnkd")
 
 			printers = append(printers, imagick.NewMagickWand())
 			printers[uniqueSets-1].AddImage(tiles[h][w].GetFinalImage())
