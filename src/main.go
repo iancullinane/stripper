@@ -66,14 +66,18 @@ func main() {
 	for h := 0; h < tilesH; h++ {
 		for w := 0; w < tilesW; w++ {
 
-			if !tiles[h][w].HasOneColor() {
+			if tiles[h][w].HasOneColor() {
 				printers = append(printers, imagick.NewMagickWand())
 				uniqueSets++
 				continue
 			}
 
 			printers = append(printers, imagick.NewMagickWand())
-			printers[uniqueSets-1].AddImage(tiles[h][w].GetFinalImage())
+			if uniqueSets == 0 {
+				printers[uniqueSets].AddImage(tiles[h][w].GetFinalImage())
+			} else {
+				printers[uniqueSets-1].AddImage(tiles[h][w].GetFinalImage())
+			}
 			// lastTile = tiles[h][w]
 		}
 	}
