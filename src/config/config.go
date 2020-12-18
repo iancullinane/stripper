@@ -33,10 +33,10 @@ func (c *config) LoadConfig() config {
 	return config
 }
 
-func (c *config) GetOutputFolder() string {
+func (c *config) GetOutputDir() string {
 	return c.Output
 }
 
-func (c *config) GetInputFolder() string {
+func (c *config) GetInputFile() string {
 	return c.Input
 }

@@ -1,3 +1,3 @@
 # yaml object to define how to run the image stripper
 Input: "./test_file/gauis.png"
-Output: "./output/%d.png"
+OutputDir: "./output/"

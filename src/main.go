@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-	"os"
 	"path"
-	"path/filepath"
 
 	"github.com/iancullinane/stripper/src/config"
 	"github.com/iancullinane/stripper/src/tile"
@@ -19,7 +17,7 @@ func main() {
 	config := config.New()
 
 	log.Println("Start image processing")
-	od := config.GetOutputFolder()
+	od := config.GetOutputDir()
 
 	err := ClearDir(od)
 	if err != nil {
@@ -36,7 +34,7 @@ func main() {
 
 	// Make a mw for the original
 	og := imagick.NewMagickWand()
-	err = og.ReadImage(config.GetInputFolder())
+	err = og.ReadImage(config.GetInputFile())
 	if err != nil {
 		panic(err)
 	}
@@ -82,14 +80,14 @@ func main() {
 		}
 	}
 
-	log.Println(config.GetOutputFolder())
+	log.Println(config.GetOutputDir())
 	log.Println(len(printers))
 	// empty := false
 	// TODO::each color for sprite 4 col
 	// TODO::each class has single color tiles in between
 	// log.Print(tiles)
 	for _, printer := range printers {
-		printer.WriteImages(config.GetOutputFolder(), true)
+		printer.WriteImages(config.GetOutputDir()+`%d`, true)
 	}
 
 }
@@ -98,21 +96,21 @@ func ClearDir(dir string) error {
 
 	cleanPath := path.Dir(dir)
 	log.Printf("Remove %s", cleanPath)
-	d, err := os.Open(cleanPath)
-	if err != nil {
-		return err
-	}
-	defer d.Close()
-	names, err := d.Readdirnames(-1)
-	if err != nil {
-		return err
-	}
-	for _, name := range names {
-		log.Printf("rm %s/%s", cleanPath, name)
-		err = os.RemoveAll(filepath.Join(cleanPath, name))
-		if err != nil {
-			return err
-		}
-	}
+	// d, err := os.Open(cleanPath)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer d.Close()
+	// names, err := d.Readdirnames(-1)
+	// if err != nil {
+	// 	return err
+	// }
+	// for _, name := range names {
+	// 	log.Printf("rm %s/%s", cleanPath, name)
+	// 	err = os.RemoveAll(filepath.Join(cleanPath, name))
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
 	return nil
 }
